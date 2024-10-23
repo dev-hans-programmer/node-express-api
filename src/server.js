@@ -1,4 +1,5 @@
-const app = require("./app");
+const app = require('./app');
+const Config = require('./config');
 
-const port = 9000;
+const port = Config.PORT || 9000;
 app.listen(port, () => console.log(`App running on port ${port}...`));
