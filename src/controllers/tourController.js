@@ -1,34 +1,33 @@
-exports.getAllTours = (req, res) => {
-  res.json({
-    status: 'success',
-    message: 'Not implemented yet',
-  });
+const Tour = require('../models/tourModel');
+const { sendJSend } = require('../utils/app');
+
+exports.getAllTours = async (req, res) => {
+  const tours = await Tour.find();
+  return sendJSend(res, { tours });
 };
 
-exports.getTour = (req, res) => {
-  res.json({
-    status: 'success',
-    message: 'Not implemented yet',
-  });
+exports.getTour = async (req, res) => {
+  const tourId = req.params.id;
+  const tour = await Tour.findById(tourId);
+  return sendJSend(res, { tour });
 };
 
-exports.createTour = (req, res) => {
-  res.json({
-    status: 'success',
-    message: 'Not implemented yet',
-  });
+exports.createTour = async (req, res) => {
+  const newTour = await Tour.create(req.body);
+  return sendJSend(res, { tour: newTour }, 201);
 };
 
-exports.updateTour = (req, res) => {
-  res.json({
-    status: 'success',
-    message: 'Not implemented yet',
+exports.updateTour = async (req, res) => {
+  const tourId = req.params.id;
+
+  const updatedTour = await Tour.findByIdAndUpdate(tourId, req.body, {
+    new: true,
+    runValidators: true,
   });
+  return sendJSend(res, { tour: updatedTour });
 };
 
-exports.deleteTour = (req, res) => {
-  res.json({
-    status: 'success',
-    message: 'Not implemented yet',
-  });
+exports.deleteTour = async (req, res) => {
+  await Tour.findByIdAndDelete(req.params.id);
+  return sendJSend(res, null, 204);
 };

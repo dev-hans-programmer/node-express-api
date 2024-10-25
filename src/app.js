@@ -7,6 +7,7 @@ const Config = require('./config');
 const app = express();
 
 if (Config.NODE_ENV === 'dev') app.use(morgan('dev'));
+app.use(express.json());
 app.use(express.static(`${process.cwd()}/public`));
 
 app.get('/', (req, res) => res.send('Hello from the server side!'));

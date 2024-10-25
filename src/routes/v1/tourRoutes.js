@@ -6,12 +6,13 @@ const {
   updateTour,
   deleteTour,
 } = require('../../controllers/tourController');
+const { logger } = require('../../config/logger');
 
 const router = express.Router();
 
 // param middleware
 router.param('id', (req, res, next, id) => {
-  console.log(`Tour with ID: ${id}`);
+  logger.info(`Tour with ID: ${id}`);
   next();
 });
 
