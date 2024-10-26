@@ -1,8 +1,21 @@
 const Tour = require('../models/tourModel');
-const { sendJSend } = require('../utils/app');
+const { sendJSend } = require('../utils/common');
 
 exports.getAllTours = async (req, res) => {
-  const tours = await Tour.find();
+  // Filtering
+  const queryObj = { ...req.query };
+  const excludedFields = ['page', 'limit', 'sort', 'fields'];
+  excludedFields.forEach((el) => delete queryObj[el]);
+
+  // Advanced Filtering
+  let queryStr = JSON.stringify(queryObj);
+  // replace gt|gte|lt|lte with $gt|$gte|$lt|lte
+  queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`); // \b -> match whole word
+
+  // Execute the query
+  const query = Tour.find(JSON.parse(queryStr));
+
+  const tours = await query;
   return sendJSend(res, { tours });
 };
 
