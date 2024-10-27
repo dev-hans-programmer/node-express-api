@@ -13,7 +13,15 @@ exports.getAllTours = async (req, res) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`); // \b -> match whole word
 
   // Execute the query
-  const query = Tour.find(JSON.parse(queryStr));
+  let query = Tour.find(JSON.parse(queryStr));
+
+  // sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort('-createdAt');
+  }
 
   const tours = await query;
   return sendJSend(res, { tours });
