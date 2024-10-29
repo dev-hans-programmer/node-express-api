@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const slugify = require('slugify');
 const { logger } = require('../config/logger');
 
@@ -11,6 +12,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, 'A tour must have less or equal to 40 characters'],
       minlength: [10, 'A tour must have more or equal to 10 characters'],
+      validate: [validator.isAlpha, 'Tours can only have alpha characters'],
     },
     slug: String,
     ratingAverage: {
@@ -42,7 +44,16 @@ const tourSchema = new mongoose.Schema(
         message: 'Difficulty is either easy, medium, difficult',
       },
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // this only points to current doc on NEW document creation
+          return val < this.price;
+        },
+        message: 'Discount cannot be more than price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
