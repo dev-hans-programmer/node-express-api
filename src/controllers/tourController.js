@@ -1,8 +1,8 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
-const { sendJSend } = require('../utils/common');
+const { sendJSend, catchAsync } = require('../utils/common');
 
-exports.getAllTours = async (req, res) => {
+exports.getAllTours = catchAsync(async (req, res) => {
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .limitFields()
@@ -11,20 +11,20 @@ exports.getAllTours = async (req, res) => {
 
   const tours = await features.query;
   return sendJSend(res, { tours, total: tours.length });
-};
+});
 
-exports.getTour = async (req, res) => {
+exports.getTour = catchAsync(async (req, res) => {
   const tourId = req.params.id;
   const tour = await Tour.findById(tourId);
   return sendJSend(res, { tour });
-};
+});
 
-exports.createTour = async (req, res) => {
+exports.createTour = catchAsync(async (req, res) => {
   const newTour = await Tour.create(req.body);
   return sendJSend(res, { tour: newTour }, 201);
-};
+});
 
-exports.updateTour = async (req, res) => {
+exports.updateTour = catchAsync(async (req, res) => {
   const tourId = req.params.id;
 
   const updatedTour = await Tour.findByIdAndUpdate(tourId, req.body, {
@@ -32,14 +32,14 @@ exports.updateTour = async (req, res) => {
     runValidators: true,
   });
   return sendJSend(res, { tour: updatedTour });
-};
+});
 
-exports.deleteTour = async (req, res) => {
+exports.deleteTour = catchAsync(async (req, res) => {
   await Tour.findByIdAndDelete(req.params.id);
   return sendJSend(res, null, 204);
-};
+});
 
-exports.getTourStats = async (req, res) => {
+exports.getTourStats = catchAsync(async (req, res) => {
   const stats = await Tour.aggregate([
     {
       $match: { ratingAverage: { $gte: 4.5 } },
@@ -63,9 +63,9 @@ exports.getTourStats = async (req, res) => {
     },
   ]);
   return sendJSend(res, { stats });
-};
+});
 
-exports.getMonthlyPlan = async (req, res) => {
+exports.getMonthlyPlan = catchAsync(async (req, res) => {
   const { year } = req.params;
   const plan = await Tour.aggregate([
     {
@@ -97,4 +97,4 @@ exports.getMonthlyPlan = async (req, res) => {
     },
   ]);
   return sendJSend(res, { plan });
-};
+});
