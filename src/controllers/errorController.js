@@ -5,6 +5,19 @@ const AppError = require('../utils/appError');
 const handleCastErrorDb = (err) =>
   new AppError(`Invalid ${err.path}:${err.value}`, 400);
 
+const handleDuplicateKeyDb = (err) => {
+  const value = err.errmsg.match(/(['"])(.*?)\1/g);
+  const msg = `Duplicate field value: ${value}, Please use another value`;
+  return new AppError(msg, 400);
+};
+
+const handleValidationErrorDb = (err) => {
+  const msg = Object.keys(err.errors)
+    .map((key) => err.errors[key].message)
+    .join('|');
+  return new AppError(msg, 400);
+};
+
 const sendDevError = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -34,16 +47,15 @@ exports.globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  console.log('ERROR NAME ', err.name, err.message);
-  console.log('ERROR KIND ', err.kind);
-
   if (Config.NODE_ENV === 'production') {
     let error = { ...err };
 
     // Explicitly set  `message` properties on the copied error object
     error.message = err.message;
 
-    if (err.name === 'CastError') error = handleCastErrorDb(error);
+    if (err.name === 'CastError') error = handleCastErrorDb(err);
+    if (err.code === 11000) error = handleDuplicateKeyDb(err);
+    if (err.name === 'ValidationError') error = handleValidationErrorDb(err);
     return sendProdError(error, res);
   }
   return sendDevError(err, res);
