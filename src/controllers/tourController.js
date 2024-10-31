@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 const { sendJSend, catchAsync } = require('../utils/common');
 
 exports.getAllTours = catchAsync(async (req, res) => {
@@ -16,6 +17,10 @@ exports.getAllTours = catchAsync(async (req, res) => {
 exports.getTour = catchAsync(async (req, res) => {
   const tourId = req.params.id;
   const tour = await Tour.findById(tourId);
+
+  if (!tour)
+    // return next(new AppError(`Tour with ID ${tourId} not found `, 404));
+    throw new AppError(`Tour with ID ${tourId} not found`, 404);
   return sendJSend(res, { tour });
 });
 
@@ -35,7 +40,9 @@ exports.updateTour = catchAsync(async (req, res) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) throw new AppError(`Tour with ID ${req.params.id} not found`, 404);
   return sendJSend(res, null, 204);
 });
 
