@@ -22,7 +22,7 @@ const logger = winston.createLogger({
       silent: Config.NODE_ENV === 'test',
     }),
     new winston.transports.Console({
-      silent: Config.NODE_ENV === 'production',
+      silent: Config.NODE_ENV === 'productio',
     }),
   ],
 });

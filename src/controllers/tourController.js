@@ -14,13 +14,13 @@ exports.getAllTours = catchAsync(async (req, res) => {
   return sendJSend(res, { tours, total: tours.length });
 });
 
-exports.getTour = catchAsync(async (req, res) => {
+exports.getTour = catchAsync(async (req, res, next) => {
   const tourId = req.params.id;
   const tour = await Tour.findById(tourId);
 
   if (!tour)
-    // return next(new AppError(`Tour with ID ${tourId} not found `, 404));
-    throw new AppError(`Tour with ID ${tourId} not found`, 404);
+    return next(new AppError(`Tour with ID ${tourId} not found `, 404));
+  // throw new AppError(`Tour with ID ${tourId} not found`, 404);
   return sendJSend(res, { tour });
 });
 
