@@ -47,16 +47,18 @@ exports.globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
+  let error = { ...err };
+
+  // Explicitly set  `message` properties on the copied error object
+  error.message = err.message;
+  error.stack = err.stack;
+
+  if (err.name === 'CastError') error = handleCastErrorDb(err);
+  if (err.code === 11000) error = handleDuplicateKeyDb(err);
+  if (err.name === 'ValidationError') error = handleValidationErrorDb(err);
+
   if (Config.NODE_ENV === 'production') {
-    let error = { ...err };
-
-    // Explicitly set  `message` properties on the copied error object
-    error.message = err.message;
-
-    if (err.name === 'CastError') error = handleCastErrorDb(err);
-    if (err.code === 11000) error = handleDuplicateKeyDb(err);
-    if (err.name === 'ValidationError') error = handleValidationErrorDb(err);
     return sendProdError(error, res);
   }
-  return sendDevError(err, res);
+  return sendDevError(error, res);
 };
