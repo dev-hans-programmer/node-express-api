@@ -1,7 +1,15 @@
 require('dotenv').config();
 
-const { PORT, NODE_ENV, DB_URI, LOG_LEVEL } = process.env;
+const { PORT, NODE_ENV, DB_URI, LOG_LEVEL, JWT_SECRET, JWT_EXPIRES_IN } =
+  process.env;
 
-const Config = { PORT, NODE_ENV, DB_URI, LOG_LEVEL };
+const Config = {
+  PORT,
+  NODE_ENV,
+  DB_URI,
+  LOG_LEVEL,
+  JWT_SECRET,
+  JWT_EXPIRES_IN,
+};
 
 module.exports = Config;

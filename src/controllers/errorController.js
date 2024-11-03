@@ -5,6 +5,11 @@ const AppError = require('../utils/appError');
 const handleCastErrorDb = (err) =>
   new AppError(`Invalid ${err.path}:${err.value}`, 400);
 
+const handleJwtError = () =>
+  new AppError('Invalid token, Please log in again!', 401);
+
+const handleJwtExpiryError = () => new AppError('Token expired!', 401);
+
 const handleDuplicateKeyDb = (err) => {
   const value = err.errmsg.match(/(['"])(.*?)\1/g);
   const msg = `Duplicate field value: ${value}, Please use another value`;
@@ -56,6 +61,8 @@ exports.globalErrorHandler = (err, req, res, next) => {
   if (err.name === 'CastError') error = handleCastErrorDb(err);
   if (err.code === 11000) error = handleDuplicateKeyDb(err);
   if (err.name === 'ValidationError') error = handleValidationErrorDb(err);
+  if (err.name === 'JsonWebTokenError') error = handleJwtError();
+  if (err.name === 'TokenExpiredError') error = handleJwtExpiryError();
 
   if (Config.NODE_ENV === 'production') {
     return sendProdError(error, res);
