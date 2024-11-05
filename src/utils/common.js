@@ -15,4 +15,15 @@ const AppRoles = {
   USER: 'user',
 };
 
-module.exports = { sendJSend, catchAsync, AppRoles, encrypt };
+function extractNumericValue(jwtExpiresIn) {
+  const match = jwtExpiresIn.match(/\d+/); // Find digits in the string
+  return match ? parseInt(match[0], 10) : null; // Convert to integer if found
+}
+
+module.exports = {
+  sendJSend,
+  catchAsync,
+  AppRoles,
+  encrypt,
+  extractNumericValue,
+};

@@ -2,7 +2,12 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
-const { catchAsync, sendJSend, encrypt } = require('../utils/common');
+const {
+  catchAsync,
+  sendJSend,
+  encrypt,
+  extractNumericValue,
+} = require('../utils/common');
 const Config = require('../config');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
@@ -11,6 +16,19 @@ const signToken = (id) =>
   jwt.sign({ id }, Config.JWT_SECRET, {
     expiresIn: Config.JWT_EXPIRES_IN,
   });
+
+const sendCookie = (res, token) => {
+  const cookieOptions = {
+    httpOnly: true,
+    expires: new Date(
+      Date.now() +
+        extractNumericValue(Config.JWT_EXPIRES_IN) * 24 * 60 * 60 * 1000
+    ), // same as JWT expire: 7 days
+    ...(Config.NODE_ENV === 'production' ? { secure: true } : {}),
+  };
+
+  res.cookie('jwt', token, cookieOptions);
+};
 
 exports.protect = catchAsync(async (req, res, next) => {
   // get the token from bearer header
@@ -58,7 +76,7 @@ exports.signUp = catchAsync(async (req, res) => {
 
   // sign the jwt
   const token = signToken(newUser._id);
-
+  sendCookie(res, token);
   return sendJSend(res, { user: newUser, token }, 201);
 });
 
@@ -74,7 +92,7 @@ exports.login = catchAsync(async (req, res) => {
     throw new AppError('Invalid user', 401);
 
   const token = signToken(user._id);
-
+  sendCookie(res, token);
   return sendJSend(res, { token });
 });
 
