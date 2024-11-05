@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 
@@ -24,6 +26,16 @@ const limiter = rateLimit({
 
 app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
+
+// Data sanitization against NOSQL query injection
+app.use(mongoSanitize()); // this will remove the query from the request object
+// for instance, if we send {"email":{"$gt":""},"password":"1234"}
+// we can log in automatically without valid email
+
+// Data sanitization against xss: Will remove malicious JS code from the request payload object
+// It will transform the html tags into sth different as string
+app.use(xss());
+
 app.use(express.static(`${process.cwd()}/public`));
 
 app.get('/', (req, res) => res.send('Hello from the server side!'));
