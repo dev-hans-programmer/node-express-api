@@ -22,7 +22,7 @@ router.param('id', (req, res, next, id) => {
 
 router.get('/tour-stats', getTourStats);
 router.get('/monthly-plan/:year', getMonthlyPlan);
-router.route('/').get(protect, getAllTours).post(createTour);
+router.route('/').get(getAllTours).post(createTour);
 router
   .route('/:id')
   .get(getTour)
