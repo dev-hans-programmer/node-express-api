@@ -140,3 +140,21 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   return sendJSend(res, { token });
 });
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+  // Get the user
+  const user = await User.findById(req.user._id).select('+password');
+  if (!user) throw new AppError('User not found', 404);
+
+  if (!(await user.comparePassword(currentPassword, user.password)))
+    throw new AppError('Password did not match', 400);
+
+  user.password = newPassword; // we could have also used findOneAndUpdate
+  // But in that case, our mongoose validator and
+  // middleware will not run
+
+  await user.save();
+
+  return sendJSend(res, { message: 'Password has been updated' });
+});

@@ -31,6 +31,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 async function encryptPassword(password) {
@@ -49,6 +54,12 @@ userSchema.pre('save', async function (next) {
     this.passwordChangedAt = Date.now() - 1000; // Sometimes it takes time to update the DB, hence subtracting 1 sec to make sure the token is always is issued after the passwordChangedAt value so that we can log in
   }
 
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  // exclude the docs which is not active
+  this.find({ active: { $ne: false } });
   next();
 });
 
