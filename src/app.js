@@ -4,6 +4,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const hpp = require('hpp');
 
 const v1Router = require('./routes/v1');
 const Config = require('./config');
@@ -35,6 +36,14 @@ app.use(mongoSanitize()); // this will remove the query from the request object
 // Data sanitization against xss: Will remove malicious JS code from the request payload object
 // It will transform the html tags into sth different as string
 app.use(xss());
+
+// Prevent parameter pollution
+// will remove duplicate query key
+app.use(
+  hpp({
+    whitelist: ['duration'], // duration might be duplicate in our query
+  })
+); // http parameter pollution
 
 app.use(express.static(`${process.cwd()}/public`));
 
