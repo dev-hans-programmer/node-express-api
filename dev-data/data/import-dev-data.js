@@ -5,9 +5,7 @@ require('dotenv').config();
 
 const connectDB = () => mongoose.connect(process.env.DB_URI);
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 async function importData() {
   try {

@@ -45,6 +45,13 @@ class APIFeatures {
     this.query = this.query.skip(skip).limit(limit);
     return this;
   }
+
+  populate(path, fields) {
+    this.query = fields
+      ? this.query.populate({ path, select: fields })
+      : this.query.populate(path);
+    return this;
+  }
 }
 
 module.exports = APIFeatures;

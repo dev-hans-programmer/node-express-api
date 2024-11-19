@@ -68,6 +68,30 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a cover image'],
     },
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     images: [String],
     startDates: [Date],
   },
@@ -96,7 +120,8 @@ tourSchema.post('save', (doc, next) => {
 // query middleware
 tourSchema.pre(/^find/, function (next) {
   // tourSchema.pre('find', function (next) {
-  this.find({ secretTour: { $ne: true } }); // here 'this' is the query object
+  this.find({ secretTour: { $ne: true } });
+  // here 'this' is the query object
   this.start = Date.now();
   next();
 });

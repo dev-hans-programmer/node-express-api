@@ -20,7 +20,7 @@ if (Config.NODE_ENV === 'dev') app.use(morgan('dev'));
 
 // limit requests from the same IP
 const limiter = rateLimit({
-  max: 5,
+  max: 100,
   windowMs: 60 * 60 * 1000, // in 1 hour 5 request is allowed
   message: 'Too many requests from this IP, please try again later!',
 });
