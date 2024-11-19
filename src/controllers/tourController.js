@@ -9,7 +9,8 @@ exports.getAllTours = catchAsync(async (req, res) => {
     .limitFields()
     .sort()
     .paginate()
-    .populate('guides', 'name photo');
+    .populate('guides', 'name photo')
+    .populate('reviews');
   const tours = await features.query;
   return sendJSend(res, { tours, total: tours.length });
 });
