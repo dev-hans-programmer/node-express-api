@@ -4,6 +4,7 @@ const router = express.Router();
 
 const userRouter = require('./userRoutes');
 const tourRouter = require('./tourRoutes');
+const reviewRouter = require('./reviewRoutes');
 
 const defaultRoutes = [
   {
@@ -13,6 +14,10 @@ const defaultRoutes = [
   {
     path: '/tours',
     route: tourRouter,
+  },
+  {
+    path: '/reviews',
+    route: reviewRouter,
   },
 ];
 
