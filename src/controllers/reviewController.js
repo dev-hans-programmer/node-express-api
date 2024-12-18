@@ -6,8 +6,11 @@ const AppError = require('../utils/appError');
 const { catchAsync, sendJSend } = require('../utils/common');
 
 exports.createReview = catchAsync(async (req, res) => {
-  const { review, rating, tourId } = req.body;
+  let { tourId } = req.params;
+  const { review, rating, tourId: inputTourId } = req.body;
   const userId = req.user._id;
+
+  if (!tourId) tourId = inputTourId;
 
   // find the user
   const user = await User.findById(userId);
@@ -26,7 +29,14 @@ exports.createReview = catchAsync(async (req, res) => {
   return sendJSend(res, { review: createdReview }, 201);
 });
 exports.getReviews = catchAsync(async (req, res) => {
-  const features = new APIFeatures(Review.find(), req.query)
+  const tour = req.params.tourId;
+
+  console.log('TOUR', tour);
+
+  const features = new APIFeatures(
+    tour ? Review.find({ tour }) : Review.find(),
+    req.query
+  )
     .filter()
     .limitFields()
     .paginate()
