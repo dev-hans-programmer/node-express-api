@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const { catchAsync, sendJSend } = require('../utils/common');
-const { deleteOne, updateOne } = require('./handlerFactory');
+const { deleteOne, updateOne, getOne } = require('./handlerFactory');
 
 const pick = (obj, ...props) => {
   const newObj = {};
@@ -26,6 +26,11 @@ exports.getAllUsers = catchAsync(async (req, res) => {
 
   return sendJSend(res, { users });
 });
+
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 exports.updateMe = catchAsync(async (req, res) => {
   if (req.body.password)
@@ -58,14 +63,7 @@ exports.deleteMe = catchAsync(async (req, res) => {
   return sendJSend(res, {}, 204);
 });
 
-exports.getUser = catchAsync(async (req, res) => {
-  const userId = req.params.id;
-  const user = await User.findById(userId);
-
-  if (!user) throw new AppError(`User not found with ID: ${userId}`, 404);
-
-  return sendJSend(res, { user });
-});
+exports.getUser = getOne(User);
 
 exports.createUser = catchAsync(async (req, res) => {
   const newUser = await User.create(req.body);

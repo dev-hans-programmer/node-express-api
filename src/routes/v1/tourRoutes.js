@@ -25,12 +25,20 @@ router.param('id', (req, res, next, id) => {
 router.use('/:tourId/reviews', reviewRouter);
 
 router.get('/tour-stats', getTourStats);
-router.get('/monthly-plan/:year', getMonthlyPlan);
-router.route('/').get(getAllTours).post(createTour);
+router.get(
+  '/monthly-plan/:year',
+  protect,
+  restrictTo(AppRoles.ADMIN, AppRoles.LEAD_GUIDE, AppRoles.GUIDE),
+  getMonthlyPlan
+);
+router
+  .route('/')
+  .get(getAllTours)
+  .post(protect, restrictTo(AppRoles.ADMIN, AppRoles.LEAD_GUIDE), createTour);
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
+  .patch(protect, restrictTo(AppRoles.ADMIN, AppRoles.LEAD_GUIDE), updateTour)
   .delete(protect, restrictTo(AppRoles.ADMIN, AppRoles.LEAD_GUIDE), deleteTour);
 
 module.exports = router;

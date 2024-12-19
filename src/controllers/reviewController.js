@@ -4,7 +4,7 @@ const User = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const { catchAsync, sendJSend } = require('../utils/common');
-const { deleteOne, create } = require('./handlerFactory');
+const { deleteOne, create, updateOne, getOne } = require('./handlerFactory');
 
 exports.checkReviewCreateCriteria = catchAsync(async (req, res, next) => {
   let { tourId } = req.params;
@@ -67,8 +67,10 @@ exports.getReviews = catchAsync(async (req, res) => {
 
   return sendJSend(res, { reviews });
 });
+exports.getReview = getOne(Review);
 
 exports.deleteReview = deleteOne(Review);
+exports.updateReview = updateOne(Review);
 // exports.createReview = catchAsync(async (req, res) => {});
 // exports.createReview = catchAsync(async (req, res) => {});
 // exports.createReview = catchAsync(async (req, res) => {});
