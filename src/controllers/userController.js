@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const { catchAsync, sendJSend } = require('../utils/common');
+const { deleteOne, updateOne } = require('./handlerFactory');
 
 const pick = (obj, ...props) => {
   const newObj = {};
@@ -71,17 +72,5 @@ exports.createUser = catchAsync(async (req, res) => {
   return sendJSend(res, { user: newUser }, 201);
 });
 
-exports.updateUser = (req, res) => {
-  res.json({
-    status: 'success',
-    message: 'Not implemented yet',
-  });
-};
-
-exports.deleteUser = catchAsync(async (req, res) => {
-  const deletedUser = await User.findByIdAndDelete(req.user.id);
-
-  if (!deletedUser) throw new AppError('User does not exist', 404);
-
-  return sendJSend(res, {}, 203);
-});
+exports.updateUser = updateOne(User);
+exports.deleteUser = deleteOne(User);
