@@ -66,7 +66,7 @@ exports.getAll = (Model, populateOptions = []) =>
       }
     });
 
-    const docs = await features.query;
+    const docs = await features.query.explain();
 
     return sendJSend(res, { tours: docs, total: docs.length });
   });
